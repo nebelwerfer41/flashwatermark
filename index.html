@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Add personalized watermarks to PDFs locally in your browser."
+    >
+    <title>FlashWatermark</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="brand-mark" aria-hidden="true">F</div>
+        <div>
+          <p class="eyebrow">Private, in-browser PDF tool</p>
+          <h1>FlashWatermark</h1>
+          <p class="intro">
+            Turn one PDF into personalized copies. Your documents never leave
+            this browser.
+          </p>
+        </div>
+      </header>
+
+      <form id="watermark-form" class="workspace">
+        <section class="card inputs-card" aria-labelledby="inputs-heading">
+          <div class="section-heading">
+            <span class="step">1</span>
+            <div>
+              <h2 id="inputs-heading">Choose your files</h2>
+              <p>Add one or more PDFs and the names to print on them.</p>
+            </div>
+          </div>
+
+          <label class="drop-zone" id="pdf-drop-zone" for="pdf-files">
+            <input id="pdf-files" type="file" accept="application/pdf,.pdf" multiple>
+            <span class="upload-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img">
+                <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>
+              </svg>
+            </span>
+            <strong>Drop PDFs here or browse</strong>
+            <span id="pdf-summary">PDF files only</span>
+          </label>
+
+          <div id="pdf-list" class="file-list" aria-live="polite"></div>
+
+          <div class="names-heading">
+            <label for="names">Names</label>
+            <label class="text-file-button" for="name-files">
+              Import .txt
+              <input id="name-files" type="file" accept="text/plain,.txt" multiple>
+            </label>
+          </div>
+          <textarea
+            id="names"
+            rows="7"
+            required
+            placeholder="Alice Example&#10;Bob Example&#10;Charlie Example"
+            spellcheck="false"
+          ></textarea>
+          <p class="field-note"><span id="name-count">0 names</span> · One name per line; duplicates are removed.</p>
+        </section>
+
+        <section class="card settings-card" aria-labelledby="settings-heading">
+          <div class="section-heading">
+            <span class="step">2</span>
+            <div>
+              <h2 id="settings-heading">Style the watermark</h2>
+              <p>Defaults match the command-line version.</p>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <label class="field">
+              <span>Position</span>
+              <select id="position">
+                <option value="center">Center</option>
+                <option value="top-left">Top left</option>
+                <option value="top-right">Top right</option>
+                <option value="bottom-left">Bottom left</option>
+                <option value="bottom-right">Bottom right</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Rotation</span>
+              <span class="number-suffix">
+                <input id="rotation" type="number" value="45" step="1">
+                <span>°</span>
+              </span>
+            </label>
+
+            <label class="field range-field">
+              <span>Opacity <output id="opacity-value" for="opacity">15%</output></span>
+              <input id="opacity" type="range" min="0" max="1" value="0.15" step="0.01">
+            </label>
+
+            <label class="field range-field" id="gray-field" hidden>
+              <span>Gray level <output id="gray-value" for="gray">75%</output></span>
+              <input id="gray" type="range" min="0" max="1" value="0.75" step="0.01">
+            </label>
+
+            <label class="toggle-row">
+              <span>
+                <strong>Solid gray</strong>
+                <small>May produce smaller files</small>
+              </span>
+              <input id="solid" type="checkbox" role="switch">
+            </label>
+
+            <label class="toggle-row">
+              <span>
+                <strong>Automatic font size</strong>
+                <small>Fits within 80% of each page</small>
+              </span>
+              <input id="auto-font-size" type="checkbox" role="switch" checked>
+            </label>
+
+            <label class="field" id="font-size-field" hidden>
+              <span>Font size</span>
+              <span class="number-suffix">
+                <input id="font-size" type="number" value="48" min="1" step="1">
+                <span>pt</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <section class="card action-card" aria-labelledby="generate-heading">
+          <div class="section-heading compact">
+            <span class="step">3</span>
+            <div>
+              <h2 id="generate-heading">Generate</h2>
+              <p id="output-summary">Add PDFs and names to see the output count.</p>
+            </div>
+          </div>
+
+          <button id="generate-button" class="primary-button" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5M5 20h14"/>
+            </svg>
+            <span>Generate ZIP</span>
+          </button>
+
+          <div id="progress-panel" class="progress-panel" hidden>
+            <div class="progress-copy">
+              <span id="progress-label">Preparing…</span>
+              <span id="progress-percent">0%</span>
+            </div>
+            <progress id="progress" max="100" value="0"></progress>
+          </div>
+
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+        </section>
+      </form>
+
+      <footer>
+        <span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 10V8a4 4 0 0 1 8 0v2m-9 0h10a1 1 0 0 1 1 1v8H6v-8a1 1 0 0 1 1-1Z"/>
+          </svg>
+          Local processing
+        </span>
+        <span>No uploads. No tracking. No server.</span>
+      </footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
