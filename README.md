@@ -1,3 +1,5 @@
+[Catalog](https://nebelwerfer41.github.io/) · [Repository](https://github.com/nebelwerfer41/flashwatermark)
+
 # FlashWatermark Web
 
 Create personalized, watermarked copies of one or more PDF files entirely in
@@ -26,3 +28,7 @@ branch with GitHub Pages. No build command or server is required.
 
 - [pdf-lib](https://pdf-lib.js.org/) for PDF editing
 - [JSZip](https://stuk.github.io/jszip/) for ZIP creation
+
+## License
+
+[MIT](LICENSE). Copies and derivative works must retain the copyright notice and license text. Dependencies and third-party materials retain their own licenses.
